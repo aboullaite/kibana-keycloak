@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  postgres:
+      image: postgres
+      container_name: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: password
+  keycloak:
+      image: jboss/keycloak:3.4.3.Final
+      container_name: keycloak
+      environment: 
+        POSTGRES_PORT_5432_TCP_ADDR: postgres
+        POSTGRES_DATABASE: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: password
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: password
+      ports:
+        - 8080:8080
+      depends_on:
+        - postgres
+  keycloak-proxy:
+      image: jboss/keycloak-proxy:3.4.2.Final
+      container_name: keycloak-proxy
+      environment: 
+        TARGET_URL: http://kibana:5601
+        HTTP_PORT: 8180
+        HTTPS_PORT: 8443
+        BASE_PATH: /
+        REALM_NAME: kibana
+        AUTH_SERVER_URL: http://keycloak:8080/auth
+        CLIENT_ID: kibana
+        ROLE_ALLOWED: user
+        SSL_REQUIRED: external
+      volumes: 
+        - $PWD/conf:/opt/jboss/conf
+      ports:
+        - 8180:8180
+      depends_on:
+        - keycloak
+  elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+      container_name: elasticsearch
+      environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1', 'ELASTIC_PASSWORD=elastic']
+
+  kibana:
+      image: docker.elastic.co/kibana/kibana-oss:6.2.2
+      container_name: kibana
+      environment:
+        - ELASTICSEARCH_USERNAME=elasticsearch
+        - ELASTICSEARCH_PASSWORD=elastic
+        - ELASTICSEARCH_HOST=elasticsearch
+        - ELASTICSEARCH_PORT=9200
+      depends_on: ['elasticsearch']        
+
+volumes:
+  postgres_data:
+      driver: local
