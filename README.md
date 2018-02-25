@@ -2,7 +2,7 @@
 
 ### How it works
 The mode of operation is summed up in 3 simple steps:
-![](/content/images/2018/02/Presentation1.jpg)
+![](https://aboullaite.me/content/images/2018/02/Presentation1.jpg)
 
 1. External traffic is directed to the keycloak proxy. The proxy decides based on it configuration if the destination needs authentication.
 2. The keycloak Proxy work together with Keycloak and redirects the user to the authentication server so the user can login.
