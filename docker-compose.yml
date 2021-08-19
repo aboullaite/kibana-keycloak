@@ -11,7 +11,7 @@ services:
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: password
   keycloak:
-      image: jboss/keycloak:3.4.3.Final
+      image: quay.io/keycloak/keycloak:15.0.1
       container_name: keycloak
       environment: 
         POSTGRES_PORT_5432_TCP_ADDR: postgres
@@ -44,12 +44,12 @@ services:
       depends_on:
         - keycloak
   elasticsearch:
-      image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+      image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
       container_name: elasticsearch
       environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1', 'ELASTIC_PASSWORD=elastic']
 
   kibana:
-      image: docker.elastic.co/kibana/kibana-oss:6.2.2
+      image: docker.elastic.co/kibana/kibana:7.14.0
       container_name: kibana
       environment:
         - ELASTICSEARCH_USERNAME=elasticsearch
